@@ -1,10 +1,10 @@
+import glob, os
 cook_book = {}
 def get_indigrients(file_name):
     with open(file_name) as file:
         for line in file:
             name = line.strip()
             count = int(file.readline().strip())
-            print(count)
             list_dish = []
             for indigrients in range(count):
                 ingredient_name, quantity, measure = file.readline().split('|')
@@ -14,38 +14,47 @@ def get_indigrients(file_name):
             file.readline()
     return cook_book
 
-
 def get_shop_list_by_dishes(dishes, person_count):
     shoplist = {}
     for dish in dishes:
         for ingredients in cook_book[dish]:
-            shoplist.setdefault(ingredients['ingredient_name'], {'measure':ingredients['measure'], 'quantity':int(ingredients['quantity']) * person_count})
+            if ingredients['ingredient_name'] in list(shoplist.keys()):
+                shoplist[ingredients['ingredient_name']].update(quantity = int(shoplist[ingredients['ingredient_name']]['quantity']) + int(ingredients['quantity']) * person_count)
+            else:
+                shoplist.setdefault(ingredients['ingredient_name'], {'measure': ingredients['measure'],'quantity': int(ingredients['quantity']) * person_count})
     return shoplist
 
 
 
-def two_by_one(first_name, second_name):
-    file1 = []
-    file2 = []
+def files_to_file(directory):
+
+    file_dict = {}
+    sort_dict = {}
+    # создаем неотсортированный словарь
+    file_list = os.chdir(directory)
+    if 'result.txt' in os.listdir():
+        os.remove('result.txt')
+    for file in glob.glob("*.txt"):
+        mass_of_lines = []
+        with open(file) as file2read:
+            for line in file2read:
+                mass_of_lines.append(line)
+        file_dict.setdefault(file, [mass_of_lines, len(mass_of_lines)])
+    # сортируем
+    counter = 0
+    while True:
+        counter += 1
+        for value in file_dict:
+            if file_dict[value][1] == counter:
+                sort_dict.setdefault(value, file_dict[value])
+        if len(sort_dict) == len(file_dict):
+            break
+    #  записываем в итоговый файл
     result = open('result.txt', 'w+')
-
-    with open(first_name) as first_file:
-        for line in first_file:
-            file1.append(line)
-
-    with open(second_name) as second_file:
-        for line in second_file:
-            file2.append(line)
-
-    if len(file1) > len(file2):
-        result.write(second_name + '\n' + str(len(file2)) + '\n')
-        for i in range(len(file2)):
-            result.write(file2[i])
+    for key in sort_dict:
+        result.write(key + '\n' + str(sort_dict[key][1]) + '\n')
+        for i in range(len(sort_dict[key][0])):
+            result.write(sort_dict[key][0][i])
         result.write('\n')
-
-        result.write(first_name + '\n' + str(len(file1)) + '\n')
-        for i in range(len(file1)):
-            result.write(file1[i])
-    result.close()
-
     return 'Done, checkout your file!'
+

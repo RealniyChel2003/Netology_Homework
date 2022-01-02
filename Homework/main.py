@@ -1,7 +1,8 @@
-from Homework_Files import get_indigrients, get_shop_list_by_dishes, two_by_one
+from Homework_Files import get_indigrients, get_shop_list_by_dishes, files_to_file
 
 
 if __name__ == '__main__':
     print(get_indigrients('recipes.txt'), '\n')
-    print(get_shop_list_by_dishes(['Запеченный картофель', 'Омлет'], 2), '\n')
-    print(two_by_one('first.txt', 'second.txt'))
+    print(get_shop_list_by_dishes(['Омлет', 'Омлет'], 2), '\n')
+    print(files_to_file('Files'))
+
